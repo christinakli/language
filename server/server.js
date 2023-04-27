@@ -1,6 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import Replicate from "replicate";
+import fetch from "node-fetch";
+import fs from "fs";
+import request from "request";
 
 const app = express();
 
@@ -9,32 +13,61 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use(express.json());
 
-class ChatMessage {
-    constructor(text, isPrompt, user) {
-        this.text = text;
-        this.isPrompt = isPrompt;
-        this.user = user;
-    }
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN,
+  fetch: fetch
+});
+
+async function imageUrlToFile(url) {
+    console.log(url);
+    let f = await request.get(url, function (error, response, body) {
+        fs.writeFileSync('tmp.png', body);
+        let fileObject = fs.readFileSync('tmp.png');
+        return fileObject;
+    });
+    console.log(f);
+    return f;
 }
 
-function process_get_request(req, res) {
-    res.send(JSON.stringify(allPrompts));
-}
-app.get('/get-all-prompts', process_get_request);
+var allChatMessages = [];
+var curImage = "";
+async function process_chat_message(req, res) {
+    let chatMessage = req.body;
 
-var allPrompts = [];
-function process_chat_message(req, res) {
-    let body = req.body;
-    let text = body.text;
-    let isPrompt = body.isPrompt;
-    let user = body.user;
+    allChatMessages.push(chatMessage);
 
-    if (isPrompt) {
-        allPrompts.push(text);
-    }
-    console.log(allPrompts);
+    curImage = await replicate.run(
+        "stability-ai/stable-diffusion:db21e45d3f7023abc2a46ee38a23973f6dce16bb082a930b0c49861f96d1e5bf",
+        {
+            input: {
+                prompt: chatMessage.text,
+                image_dimensions: "512x512"
+            }
+        }
+    );
+    curImage = curImage[0];
+    // curImage = await replicate.run(
+    //     "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f",
+    //     {
+    //         input: {
+    //             image: await imageUrlToFile(curImage),
+    //             prompt: chatMessage.text
+    //         }
+    //     }
+    // );
+    // curImage = curImage[0];
 }
-app.post('/enter-prompt', process_chat_message);
+app.post('/enter-chat', process_chat_message);
+
+function send_chat(req, res) {
+    res.send(JSON.stringify(allChatMessages));
+}
+app.get('/get-chat', send_chat);
+
+function send_image(req, res) {
+    res.send({"image": curImage});
+}
+app.get('/get-image', send_image);
 
 function process_username(req, res) {
     let body = req.body;

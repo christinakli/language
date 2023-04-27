@@ -17,8 +17,8 @@ function Game (props) {
     const [allChatMessages, setAllChatMessages] = useState([]);
 
     function updateChat() {
-        console.log("updateChat")
-        fetch("http://localhost:8000/get-all-prompts", {
+        console.log("updateChat");
+        fetch("http://localhost:8000/get-chat", {
             method: "GET",
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
@@ -30,20 +30,38 @@ function Game (props) {
         });
     }
 
+    function updateImage() {
+        console.log("updateImage");
+        fetch("http://localhost:8000/get-image", {
+            method: "GET",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then(response => response.json())
+        .then((response) => {
+            setImgSrc(response.image);
+        });
+    }
+
+    function doUpdates() {
+        updateChat();
+        updateImage();
+    }
+
     // On mount
     useEffect(() => {
         // console.log("Window loaded");
-        console.log("USername: ", username);
-        updateChat();
-        setInterval(updateChat, 500);
+        doUpdates();
+        setInterval(doUpdates, 500);
     }, [])
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {
             console.log("Current chat message:", chatMessage)
-            fetch("http://localhost:8000/enter-prompt", {
+            fetch("http://localhost:8000/enter-chat", {
                 method: "POST",
-                body: JSON.stringify(new ChatMessage(chatMessage, true, username)),
+                body: JSON.stringify(chatMessage),
                 headers: {
                     "Content-type": "application/json; charset=UTF-8"
                 }
