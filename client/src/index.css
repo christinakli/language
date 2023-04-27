@@ -13,13 +13,50 @@ code {
 }
 
 .home-page {
-  display: flex;
+  display: block;
+  height: 100%;
+}
+
+.home-page h1 {
+  text-align: center;
 }
 
 .game-page {
   display: flex;
   background-color:lightblue;
   height:100vh;
+}
+
+.username-prompt {
+  border: solid 2px black;
+  border-radius: 5px;
+  width: 50%;
+  margin-left: 25%;
+  text-align: center;
+  background-color: lightblue;
+  height: 50%;
+}
+
+.mode-buttons {
+  margin-bottom: 10%;
+}
+
+.username-prompt button {
+  background-color: white;
+  width: 40%;
+  height: 60px;
+  margin-left: 5%;
+  margin-right: 5%;
+  border-radius: 8px;
+}
+
+username-prompt button:hover {
+  background-color: lightgray;
+}
+
+.username-prompt input {
+  width: 60%;
+  margin-bottom: 10%;
 }
 
 .drawing-area {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, componentDidMount } from 'react';
+import React, { useState, useEffect } from 'react';
 
 class ChatMessage {
     constructor(text, isPrompt, user) {
