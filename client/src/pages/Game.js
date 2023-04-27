@@ -9,7 +9,10 @@ class ChatMessage {
 }
 
 function Game (props) {
-    const [chatMessage, setChatMessage] = useState('');
+    const emptyMessage = new ChatMessage('', false, '');
+
+    const {username} = props;
+    const [chatMessage, setChatMessage] = useState(emptyMessage);
     const [aiImgSrc, setImgSrc] = useState('');
     const [allChatMessages, setAllChatMessages] = useState([]);
 
@@ -30,6 +33,7 @@ function Game (props) {
     // On mount
     useEffect(() => {
         // console.log("Window loaded");
+        console.log("USername: ", username);
         updateChat();
         setInterval(updateChat, 500);
     }, [])
@@ -39,7 +43,7 @@ function Game (props) {
             console.log("Current chat message:", chatMessage)
             fetch("http://localhost:8000/enter-prompt", {
                 method: "POST",
-                body: JSON.stringify(new ChatMessage(chatMessage, true, 'user0')),
+                body: JSON.stringify(new ChatMessage(chatMessage, true, username)),
                 headers: {
                     "Content-type": "application/json; charset=UTF-8"
                 }
@@ -74,7 +78,7 @@ function Game (props) {
 
             setAllChatMessages([...allChatMessages, chatMessage]);
             console.log("Chat messages:", allChatMessages);
-            setChatMessage('');
+            setChatMessage(emptyMessage);
         }
     };
 
@@ -88,7 +92,7 @@ function Game (props) {
                     <img id="ai-image" src={aiImgSrc}></img>
                 </div>
                 <div className="drawing-prompt">
-                    <p className="static-text"> Your partner's prompt: </p> <p> { chatMessage }  </p>
+                    <p className="static-text"> Your partner's prompt: </p> <p> { chatMessage.text }  </p>
                 </div>
             </div>
             <div className="guess-area">
@@ -99,14 +103,15 @@ function Game (props) {
                     <ul>
                         {allChatMessages.map((item, index) => {
                             // console.log("Displaying item at index", index)
-                            return <li key={index} className="prompt">{item}</li>
+                            return <li key={index} className="prompt">
+                                       <p style={{ fontWeight: 'bold' }}> {item.user === username ? "You" : item.user} </p> <p>: {item.text} </p>
+                                   </li>
                         })}
                     </ul>
                 </div>
-                <input type="text" value={chatMessage} 
-                       onInput={evt => setChatMessage(evt.target.value)}
+                <input type="text" value={chatMessage.text} 
+                       onInput={evt => setChatMessage(new ChatMessage(evt.target.value, true, username))}
                        onKeyDown={handleKeyDown}></input>
-                {/* <input type="text" id="chat_message" onKeyDown={handleKeyDown}></input> */}
             </div>  
         </div>
     );

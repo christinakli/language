@@ -14,12 +14,26 @@ function App () {
         console.log(mode)
     }
 
-    const handleKeyDown = (evt) => {
+    const usernameEntered = (evt) => {
         if (evt.key === 'Enter') {
-            console.log("Name: ", evt.target.value)
-            setUsername(evt.target.value);
-            setUsernames([...allUsernames, evt.target.value]);
+            const user = evt.target.value;
+            console.log("Name: ", user)
+            setUsername(user);
+            setUsernames([...allUsernames, user]);
             setUserEntered(true);
+
+            // fetch("http://localhost:8000/enter-prompt", {
+            //     method: "POST",
+            //     body: JSON.stringify(user),
+            //     headers: {
+            //         "Content-type": "application/json; charset=UTF-8"
+            //     }
+            // })
+            // .then(response => response.json())
+            // .then((response) => {
+            //     console.log("receive responde");
+            //     console.log(response);
+            // });
         }
     }
 
@@ -35,7 +49,7 @@ function App () {
                             <p> Enter your name: </p>
                             <input type="text" value={username} 
                                 onInput={evt => setUsername(evt.target.value)}
-                                onKeyDown={handleKeyDown}></input>
+                                onKeyDown={usernameEntered}></input>
                         </div>
                     }
                     {userEntered && 
@@ -50,23 +64,10 @@ function App () {
                     </div>
                     </div>
                 }></Route>
-                <Route path='/game' element={< Game />}></Route>
+                <Route path='/game' element={< Game username={username}/>}></Route>
             </Routes>
       </Router>
 
-
-      // <div>
-      //   <Router>
-      //     <div> 
-      //       {/* <button onClick={() => selectGameMode('Random')}> <Link to="/game">Random partner</Link> </button> */}
-      //       {/* <button onClick={() => selectGameMode('Multi')}> <Link to="/game">Multi player </Link> </button> */}
-      //     </div>
-      //     <Routes>
-      //         <Route path='/' element={< Home />}></Route>
-      //         <Route path='/game' element={< Game />}></Route>
-      //     </Routes>
-      //   </Router>
-      // </div>
    );
 }
   

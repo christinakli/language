@@ -130,6 +130,15 @@ ul {
   padding: 0;
 }
 
+li {
+  display: flex;
+  text-align: center;
+}
+
+li p {
+  margin-top: 0px;
+}
+
 .prompt {
   border: solid black;
   border-radius: 5px;

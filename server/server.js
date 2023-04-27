@@ -36,6 +36,12 @@ function process_chat_message(req, res) {
 }
 app.post('/enter-prompt', process_chat_message);
 
+function process_username(req, res) {
+    let body = req.body;
+    console.log("Body: ", JSON.stringify(body));
+}
+app.post('/enter-username', process_username);
+
 app.listen(8000, () => {
   console.log(`Server is running on port 8000.`);
 });
