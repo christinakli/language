@@ -12,6 +12,10 @@ code {
     monospace;
 }
 
+.home-page {
+  display: flex;
+}
+
 .game-page {
   display: flex;
   background-color:lightblue;
